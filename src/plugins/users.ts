@@ -1,6 +1,7 @@
 import * as Hapi from "@hapi/hapi";
 import { Prisma } from "@prisma/client";
 import * as bcrypt from "bcrypt";
+import Joi = require("joi");
 import * as jwt from "jsonwebtoken";
 
 const secretToken =
@@ -15,17 +16,46 @@ const usersPlugin: Hapi.Plugin<null> = {
       {
         method: "POST",
         path: "/signup",
-        handler: signUpHandler,
+        options: {
+          handler: signUpHandler,
+          tags: ["api"],
+          validate: {
+            payload: Joi.object({
+              name: Joi.string().required(),
+              password: Joi.string().required(),
+            }),
+          },
+        },
       },
       {
         method: "POST",
         path: "/login",
-        handler: loginHandler,
+        options: {
+          handler: loginHandler,
+          tags: ["api"],
+          validate: {
+            payload: Joi.object({
+              name: Joi.string().required(),
+              password: Joi.string().required(),
+            }),
+          },
+        },
       },
       {
         method: "GET",
         path: "/whoami",
-        handler: whoamiHandler,
+        options: {
+          handler: whoamiHandler,
+          tags: ["api"],
+          validate: {
+            headers: Joi.object({
+              token: Joi.string().description("jwt token").optional(),
+            }),
+            options: {
+              allowUnknown: true,
+            },
+          },
+        },
       },
     ]);
   },
@@ -104,7 +134,7 @@ async function loginHandler(request: Hapi.Request, h: Hapi.ResponseToolkit) {
 async function whoamiHandler(request: Hapi.Request, h: Hapi.ResponseToolkit) {
   const { prisma } = request.server.app;
   const token = request.headers["token"];
-  console.log(token);
+  console.log(request.headers);
 
   try {
     const verify = jwt.verify(token, secretToken) as jwt.VerifyOptions & {

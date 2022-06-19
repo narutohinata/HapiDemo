@@ -53,18 +53,19 @@ const schema: Joi.ObjectSchema<any> = Joi.object({
 // run
 const start = async () => {
   try {
-    await server.register([prismaPlugin, usersPlugin]);
-
     await server.register([
-      vision,
       inert,
+      vision,
       {
         plugin: hapiSwagger,
         options: swaggerOptions,
       },
     ]);
 
+    await server.register([prismaPlugin, usersPlugin]);
+
     await server.start();
+    console.log("Server running at:", server.info.uri);
   } catch (error) {
     console.log(error);
     process.exit(1);
