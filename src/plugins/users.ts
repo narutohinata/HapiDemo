@@ -6,7 +6,7 @@ import * as jwt from "jsonwebtoken";
 const secretToken =
   "47df8937b0b175ae7c5e297c69153c7cb0e675e6ad485039cbd9313b8ba39a41259d4ccef4f5c8033db20b643ab0dd687808bc8503750c6c87968711ca4";
 
-const usersPlugin: Hapi.Plugin<unknown> = {
+const usersPlugin: Hapi.Plugin<null> = {
   name: "api/users",
   dependencies: ["prisma"],
   register: async (server: Hapi.Server) => {
